@@ -11,8 +11,8 @@ variable "frontend_sg_description" {
   default = "created sg for frontend instance"
 }
 
-variable "sg_tags"{
-  type = map(string)
+variable "sg_tags" {
+  type    = map(string)
   default = {}
 }
 variable "bastion_sg_name" {
@@ -38,20 +38,20 @@ variable "mongodb_name" {
 }
 variable "mongodb_description" {
   default = "created sg for mongodb instance"
-} 
+}
 variable "mongodb_port_vpn" {
-  default = [22,27017]
+  default = [22, 27017]
 }
 
 
 variable "redis_ports_vpn" {
-    default = [22, 6379]
+  default = [22, 6379]
 }
 
 variable "mysql_ports_vpn" {
-    default = [22, 3306]
+  default = [22, 3306]
 }
 
 variable "rabbitmq_ports_vpn" {
-    default = [22, 5672]
+  default = [22, 5672]
 }

@@ -1,365 +1,156 @@
-# module "frontend" {
-#   source = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
-#   project = var.project
-#   environment = var.environment
-#   sg_name = var.frontend_sg_name
-#   sg_description = var.frontend_sg_description
-#   vpc_id = local.vpc_id
-# }
-
-# module "bastion" {
-#   source = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
-#   project = var.project
-#   environment = var.environment
-#   sg_name = var.bastion_sg_name
-#   sg_description = var.bastion_sg_description
-#   vpc_id = local.vpc_id
-# }
-# module "backend_alb" {
-#   source = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
-#   project = var.project
-#   environment = var.environment
-#   sg_name = var.backend_alb_sg_name
-#   sg_description = var.backend_alb_sg_description
-#   vpc_id = local.vpc_id
-# }
-
-# module "vpn" {
-#   source = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
-#   project = var.project
-#   environment = var.environment
-#   sg_name = var.vpn_name
-#   sg_description = var.vpn_description
-#   vpc_id = local.vpc_id
-# }
-# module "mongodb" {
-#   source = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
-#   project = var.project
-#   environment = var.environment
-#   sg_name = var.mongodb_name
-#   sg_description = var.mongodb_description
-#   vpc_id = local.vpc_id
-# }
-
-# # #bastion accpting connections from my laptop
-# # resource "aws_security_group_rule" "mongodb_vpn_ssh" {
-# #   count = length(var.mongodb_port_vpn)
-# #   type              = "ingress"
-# #   from_port         = var.mongodb_port_vpn[count.index]
-# #   to_port           = var.mongodb_port_vpn[count.index]
-# #   protocol          = "tcp"
-# #   source_security_group_id = module.bastion.sg_id
-# #   security_group_id = module.mongodb.sg_id
-# # }
-# resource "aws_security_group_rule" "mongodb_vpn_ssh" {
-#   type              = "ingress"
-#   from_port         = 22
-#   to_port           = 22
-#   protocol          = "tcp"
-#   source_security_group_id = module.vpn.sg_id
-#   security_group_id = module.mongodb.sg_id
-# }
-
-# resource "aws_security_group_rule" "mongodb_vpn_27017" {
-#   type              = "ingress"
-#   from_port         = 27017
-#   to_port           = 27017
-#   protocol          = "tcp"
-#   source_security_group_id = module.vpn.sg_id
-#   security_group_id = module.mongodb.sg_id
-# }
-# #bastion accpting connections from my laptop
-# resource "aws_security_group_rule" "backend_alb_bastion" {
-#   type              = "ingress"
-#   from_port         = 22
-#   to_port           = 22
-#   protocol          = "tcp"
-#   source_security_group_id = module.bastion.sg_id
-#   security_group_id = module.backend_alb.sg_id
-# }
-
-# #VPN ports 22, 443, 1194, 943
-# # resource "aws_security_group_rule" "vpn_ssh" {
-# #   type              = "ingress"
-# #   from_port         = 22
-# #   to_port           = 22
-# #   protocol          = "tcp"
-# #   cidr_blocks = ["0.0.0.0/0"]
-# #   security_group_id = module.vpn.sg_id
-# # }
-
-# # resource "aws_security_group_rule" "vpn_https" {
-# #   type              = "ingress"
-# #   from_port         = 443
-# #   to_port           = 443
-# #   protocol          = "tcp"
-# #   cidr_blocks = ["0.0.0.0/0"]
-# #   security_group_id = module.vpn.sg_id
-# # }
-
-# # resource "aws_security_group_rule" "vpn_1194" {
-# #   type              = "ingress"
-# #   from_port         = 1194
-# #   to_port           = 1194
-# #   protocol          = "tcp"
-# #   cidr_blocks = ["0.0.0.0/0"]
-# #   security_group_id = module.vpn.sg_id
-# # }
-
-# # resource "aws_security_group_rule" "vpn_943" {
-# #   type              = "ingress"
-# #   from_port         = 943
-# #   to_port           = 943
-# #   protocol          = "tcp"
-# #   cidr_blocks = ["0.0.0.0/0"]
-# #   security_group_id = module.vpn.sg_id
-# # }
-
-
-# resource "aws_security_group_rule" "vpn_ingress" {
-#   for_each = toset([for p in local.vpn_ports : tostring(p)])
-
-#   type              = "ingress"
-#   from_port         = tonumber(each.value)
-#   to_port           = tonumber(each.value)
-#   protocol          = "tcp"
-#   cidr_blocks       = ["0.0.0.0/0"]
-#   security_group_id = module.vpn.sg_id
-# }
-# resource "aws_security_group_rule" "backend_alb_vpn" {
-#   type              = "ingress"
-#   from_port         = 80
-#   to_port           = 80
-#   protocol          = "tcp"
-#   source_security_group_id = module.vpn.sg_id
-#   security_group_id = module.backend_alb.sg_id
-# }
-
-
-
-
-
-# module "redis" {
-#     #source = "../../terraform-aws-securitygroup"
-#     source = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
-#     project = var.project
-#     environment = var.environment
-
-#     sg_name = "redis"
-#     sg_description = "for redis"
-#     vpc_id = local.vpc_id
-# }
-
-# module "mysql" {
-#     #source = "../../terraform-aws-securitygroup"
-#     source = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
-#     project = var.project
-#     environment = var.environment
-
-#     sg_name = "mysql"
-#     sg_description = "for mysql"
-#     vpc_id = local.vpc_id
-# }
-
-# module "rabbitmq" {
-#     #source = "../../terraform-aws-securitygroup"
-#     source = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
-#     project = var.project
-#     environment = var.environment
-
-#     sg_name = "rabbitmq"
-#     sg_description = "for rabbitmq"
-#     vpc_id = local.vpc_id
-# }
-
-# # Redis
-# resource "aws_security_group_rule" "redis_vpn" {
-#   count = length(var.redis_ports_vpn)
-#   type              = "ingress"
-#   from_port         = var.redis_ports_vpn[count.index]
-#   to_port           = var.redis_ports_vpn[count.index]
-#   protocol          = "tcp"
-#   source_security_group_id = module.vpn.sg_id
-#   security_group_id = module.redis.sg_id
-# }
-
-# resource "aws_security_group_rule" "redis_bastion" {
-#   count = length(var.redis_ports_vpn)
-#   type              = "ingress"
-#   from_port         = var.redis_ports_vpn[count.index]
-#   to_port           = var.redis_ports_vpn[count.index]
-#   protocol          = "tcp"
-#   source_security_group_id = module.bastion.sg_id
-#   security_group_id = module.redis.sg_id
-# }
-
-# resource "aws_security_group_rule" "redis_user" {
-#   type              = "ingress"
-#   from_port         = 6379
-#   to_port           = 6379
-#   protocol          = "tcp"
-#   source_security_group_id = module.user.sg_id
-#   security_group_id = module.redis.sg_id
-# }
-
-# resource "aws_security_group_rule" "redis_cart" {
-#   type              = "ingress"
-#   from_port         = 6379
-#   to_port           = 6379
-#   protocol          = "tcp"
-#   source_security_group_id = module.cart.sg_id
-#   security_group_id = module.redis.sg_id
-# }
-
-# # MYSQL
-# resource "aws_security_group_rule" "mysql_vpn" {
-#   count = length(var.mysql_ports_vpn)
-#   type              = "ingress"
-#   from_port         = var.mysql_ports_vpn[count.index]
-#   to_port           = var.mysql_ports_vpn[count.index]
-#   protocol          = "tcp"
-#   source_security_group_id = module.vpn.sg_id
-#   security_group_id = module.mysql.sg_id
-# }
-
-# resource "aws_security_group_rule" "mysql_bastion" {
-#   count = length(var.mysql_ports_vpn)
-#   type              = "ingress"
-#   from_port         = var.mysql_ports_vpn[count.index]
-#   to_port           = var.mysql_ports_vpn[count.index]
-#   protocol          = "tcp"
-#   source_security_group_id = module.bastion.sg_id
-#   security_group_id = module.mysql.sg_id
-# }
-
-# resource "aws_security_group_rule" "mysql_shipping" {
-#   type              = "ingress"
-#   from_port         = 3306
-#   to_port           = 3306
-#   protocol          = "tcp"
-#   source_security_group_id = module.shipping.sg_id
-#   security_group_id = module.mysql.sg_id
-# }
-
-
-# # RabbitMQ
-# resource "aws_security_group_rule" "rabbitmq_vpn" {
-#   count = length(var.rabbitmq_ports_vpn)
-#   type              = "ingress"
-#   from_port         = var.rabbitmq_ports_vpn[count.index]
-#   to_port           = var.rabbitmq_ports_vpn[count.index]
-#   protocol          = "tcp"
-#   source_security_group_id = module.vpn.sg_id
-#   security_group_id = module.rabbitmq.sg_id
-# }
-
-# resource "aws_security_group_rule" "rabbitmq_bastion" {
-#   count = length(var.rabbitmq_ports_vpn)
-#   type              = "ingress"
-#   from_port         = var.rabbitmq_ports_vpn[count.index]
-#   to_port           = var.rabbitmq_ports_vpn[count.index]
-#   protocol          = "tcp"
-#   source_security_group_id = module.bastion.sg_id
-#   security_group_id = module.rabbitmq.sg_id
-# }
-
-# resource "aws_security_group_rule" "rabbitmq_payment" {
-#   type              = "ingress"
-#   from_port         = 5672
-#   to_port           = 5672
-#   protocol          = "tcp"
-#   source_security_group_id = module.payment.sg_id
-#   security_group_id = module.rabbitmq.sg_id
-# }
-
-
-# 1. Security Group Modules
+# 1. Security Group Modules - Infrastructure Components
 
 # Frontend Security Group
 module "frontend" {
-  source            = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
-  project           = var.project
-  environment       = var.environment
-  sg_name           = var.frontend_sg_name
-  sg_description    = var.frontend_sg_description
-  vpc_id            = local.vpc_id
+  source         = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
+  project        = var.project
+  environment    = var.environment
+  sg_name        = var.frontend_sg_name
+  sg_description = var.frontend_sg_description
+  vpc_id         = local.vpc_id
 }
 
 # Bastion Security Group
 module "bastion" {
-  source            = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
-  project           = var.project
-  environment       = var.environment
-  sg_name           = var.bastion_sg_name
-  sg_description    = var.bastion_sg_description
-  vpc_id            = local.vpc_id
+  source         = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
+  project        = var.project
+  environment    = var.environment
+  sg_name        = var.bastion_sg_name
+  sg_description = var.bastion_sg_description
+  vpc_id         = local.vpc_id
 }
 
 # Backend ALB Security Group
 module "backend_alb" {
-  source            = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
-  project           = var.project
-  environment       = var.environment
-  sg_name           = var.backend_alb_sg_name
-  sg_description    = var.backend_alb_sg_description
-  vpc_id            = local.vpc_id
+  source         = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
+  project        = var.project
+  environment    = var.environment
+  sg_name        = var.backend_alb_sg_name
+  sg_description = var.backend_alb_sg_description
+  vpc_id         = local.vpc_id
 }
 
 # VPN Security Group
 module "vpn" {
-  source            = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
-  project           = var.project
-  environment       = var.environment
-  sg_name           = var.vpn_name
-  sg_description    = var.vpn_description
-  vpc_id            = local.vpc_id
+  source         = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
+  project        = var.project
+  environment    = var.environment
+  sg_name        = var.vpn_name
+  sg_description = var.vpn_description
+  vpc_id         = local.vpc_id
 }
+
+# 2. Security Group Modules - Database Components
 
 # MongoDB Security Group
 module "mongodb" {
-  source            = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
-  project           = var.project
-  environment       = var.environment
-  sg_name           = var.mongodb_name
-  sg_description    = var.mongodb_description
-  vpc_id            = local.vpc_id
+  source         = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
+  project        = var.project
+  environment    = var.environment
+  sg_name        = var.mongodb_name
+  sg_description = var.mongodb_description
+  vpc_id         = local.vpc_id
 }
 
 # Redis Security Group
 module "redis" {
-  source            = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
-  project           = var.project
-  environment       = var.environment
-  sg_name           = "redis"
-  sg_description    = "for redis"
-  vpc_id            = local.vpc_id
+  source         = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
+  project        = var.project
+  environment    = var.environment
+  sg_name        = "redis"
+  sg_description = "for redis"
+  vpc_id         = local.vpc_id
 }
 
 # MySQL Security Group
 module "mysql" {
-  source            = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
-  project           = var.project
-  environment       = var.environment
-  sg_name           = "mysql"
-  sg_description    = "for mysql"
-  vpc_id            = local.vpc_id
+  source         = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
+  project        = var.project
+  environment    = var.environment
+  sg_name        = "mysql"
+  sg_description = "for mysql"
+  vpc_id         = local.vpc_id
 }
 
 # RabbitMQ Security Group
 module "rabbitmq" {
-  source            = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
-  project           = var.project
-  environment       = var.environment
-  sg_name           = "rabbitmq"
-  sg_description    = "for rabbitmq"
-  vpc_id            = local.vpc_id
+  source         = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
+  project        = var.project
+  environment    = var.environment
+  sg_name        = "rabbitmq"
+  sg_description = "for rabbitmq"
+  vpc_id         = local.vpc_id
 }
 
-# 2. Security Group Rules
+# 3. Security Group Modules - Application Services
 
-# MongoDB Security Group Rules
+# User Service Security Group
+module "user" {
+  source         = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
+  project        = var.project
+  environment    = var.environment
+  sg_name        = "user"
+  sg_description = "for user service"
+  vpc_id         = local.vpc_id
+}
 
-# VPN SSH Rule (Allow VPN to access MongoDB on port 22)
+# Cart Service Security Group
+module "cart" {
+  source         = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
+  project        = var.project
+  environment    = var.environment
+  sg_name        = "cart"
+  sg_description = "for cart service"
+  vpc_id         = local.vpc_id
+}
+
+# Shipping Service Security Group
+module "shipping" {
+  source         = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
+  project        = var.project
+  environment    = var.environment
+  sg_name        = "shipping"
+  sg_description = "for shipping service"
+  vpc_id         = local.vpc_id
+}
+
+# Payment Service Security Group
+module "payment" {
+  source         = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
+  project        = var.project
+  environment    = var.environment
+  sg_name        = "payment"
+  sg_description = "for payment service"
+  vpc_id         = local.vpc_id
+}
+
+# Catalogue Service Security Group
+module "catalogue" {
+  source         = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
+  project        = var.project
+  environment    = var.environment
+  sg_name        = "catalogue"
+  sg_description = "for catalogue service"
+  vpc_id         = local.vpc_id
+}
+
+# 4. Security Group Rules - VPN Access
+
+# VPN Ingress Rules (Allow multiple ports: 22, 443, 1194, 943)
+resource "aws_security_group_rule" "vpn_ingress" {
+  for_each = toset([for p in local.vpn_ports : tostring(p)])
+
+  type              = "ingress"
+  from_port         = tonumber(each.value)
+  to_port           = tonumber(each.value)
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = module.vpn.sg_id
+}
+
+# 5. Security Group Rules - MongoDB Access
+
+# VPN SSH Access to MongoDB
 resource "aws_security_group_rule" "mongodb_vpn_ssh" {
   type                     = "ingress"
   from_port                = 22
@@ -369,7 +160,7 @@ resource "aws_security_group_rule" "mongodb_vpn_ssh" {
   security_group_id        = module.mongodb.sg_id
 }
 
-# VPN MongoDB Rule (Allow VPN to access MongoDB on port 27017)
+# VPN MongoDB Port Access
 resource "aws_security_group_rule" "mongodb_vpn_27017" {
   type                     = "ingress"
   from_port                = 27017
@@ -379,9 +170,29 @@ resource "aws_security_group_rule" "mongodb_vpn_27017" {
   security_group_id        = module.mongodb.sg_id
 }
 
-# Backend ALB Security Group Rules
+# Catalogue Service Access to MongoDB
+resource "aws_security_group_rule" "mongodb_catalogue" {
+  type                     = "ingress"
+  from_port                = 27017
+  to_port                  = 27017
+  protocol                 = "tcp"
+  source_security_group_id = module.catalogue.sg_id
+  security_group_id        = module.mongodb.sg_id
+}
 
-# Bastion SSH Rule (Allow Bastion to access Backend ALB on port 22)
+# User Service Access to MongoDB
+resource "aws_security_group_rule" "mongodb_user" {
+  type                     = "ingress"
+  from_port                = 27017
+  to_port                  = 27017
+  protocol                 = "tcp"
+  source_security_group_id = module.user.sg_id
+  security_group_id        = module.mongodb.sg_id
+}
+
+# 6. Security Group Rules - Backend ALB Access
+
+# Bastion SSH Access to Backend ALB
 resource "aws_security_group_rule" "backend_alb_bastion" {
   type                     = "ingress"
   from_port                = 22
@@ -391,7 +202,7 @@ resource "aws_security_group_rule" "backend_alb_bastion" {
   security_group_id        = module.backend_alb.sg_id
 }
 
-# VPN HTTP Rule (Allow VPN to access Backend ALB on port 80)
+# VPN HTTP Access to Backend ALB
 resource "aws_security_group_rule" "backend_alb_vpn" {
   type                     = "ingress"
   from_port                = 80
@@ -401,23 +212,19 @@ resource "aws_security_group_rule" "backend_alb_vpn" {
   security_group_id        = module.backend_alb.sg_id
 }
 
-# VPN Security Group Rules
-
-# VPN Ingress Rules (Allow multiple ports for VPN)
-resource "aws_security_group_rule" "vpn_ingress" {
-  for_each = toset([for p in local.vpn_ports : tostring(p)])
-
+# Frontend Access to Backend ALB
+resource "aws_security_group_rule" "backend_alb_frontend" {
   type                     = "ingress"
-  from_port                = tonumber(each.value)
-  to_port                  = tonumber(each.value)
+  from_port                = 80
+  to_port                  = 80
   protocol                 = "tcp"
-  cidr_blocks             = ["0.0.0.0/0"]
-  security_group_id        = module.vpn.sg_id
+  source_security_group_id = module.frontend.sg_id
+  security_group_id        = module.backend_alb.sg_id
 }
 
-# Redis Security Group Rules
+# 7. Security Group Rules - Redis Access
 
-# VPN Access to Redis Rule
+# VPN Access to Redis (multiple ports)
 resource "aws_security_group_rule" "redis_vpn" {
   count                    = length(var.redis_ports_vpn)
   type                     = "ingress"
@@ -428,7 +235,7 @@ resource "aws_security_group_rule" "redis_vpn" {
   security_group_id        = module.redis.sg_id
 }
 
-# Bastion Access to Redis Rule
+# Bastion Access to Redis
 resource "aws_security_group_rule" "redis_bastion" {
   count                    = length(var.redis_ports_vpn)
   type                     = "ingress"
@@ -439,7 +246,7 @@ resource "aws_security_group_rule" "redis_bastion" {
   security_group_id        = module.redis.sg_id
 }
 
-# User Access to Redis Rule
+# User Service Access to Redis
 resource "aws_security_group_rule" "redis_user" {
   type                     = "ingress"
   from_port                = 6379
@@ -449,7 +256,7 @@ resource "aws_security_group_rule" "redis_user" {
   security_group_id        = module.redis.sg_id
 }
 
-# Cart Service Access to Redis Rule
+# Cart Service Access to Redis
 resource "aws_security_group_rule" "redis_cart" {
   type                     = "ingress"
   from_port                = 6379
@@ -459,9 +266,9 @@ resource "aws_security_group_rule" "redis_cart" {
   security_group_id        = module.redis.sg_id
 }
 
-# MySQL Security Group Rules
+# 8. Security Group Rules - MySQL Access
 
-# VPN Access to MySQL Rule
+# VPN Access to MySQL (multiple ports)
 resource "aws_security_group_rule" "mysql_vpn" {
   count                    = length(var.mysql_ports_vpn)
   type                     = "ingress"
@@ -472,7 +279,7 @@ resource "aws_security_group_rule" "mysql_vpn" {
   security_group_id        = module.mysql.sg_id
 }
 
-# Bastion Access to MySQL Rule
+# Bastion Access to MySQL
 resource "aws_security_group_rule" "mysql_bastion" {
   count                    = length(var.mysql_ports_vpn)
   type                     = "ingress"
@@ -483,7 +290,7 @@ resource "aws_security_group_rule" "mysql_bastion" {
   security_group_id        = module.mysql.sg_id
 }
 
-# Shipping Service Access to MySQL Rule
+# Shipping Service Access to MySQL
 resource "aws_security_group_rule" "mysql_shipping" {
   type                     = "ingress"
   from_port                = 3306
@@ -493,9 +300,9 @@ resource "aws_security_group_rule" "mysql_shipping" {
   security_group_id        = module.mysql.sg_id
 }
 
-# RabbitMQ Security Group Rules
+# 9. Security Group Rules - RabbitMQ Access
 
-# VPN Access to RabbitMQ Rule
+# VPN Access to RabbitMQ (multiple ports)
 resource "aws_security_group_rule" "rabbitmq_vpn" {
   count                    = length(var.rabbitmq_ports_vpn)
   type                     = "ingress"
@@ -506,7 +313,7 @@ resource "aws_security_group_rule" "rabbitmq_vpn" {
   security_group_id        = module.rabbitmq.sg_id
 }
 
-# Bastion Access to RabbitMQ Rule
+# Bastion Access to RabbitMQ
 resource "aws_security_group_rule" "rabbitmq_bastion" {
   count                    = length(var.rabbitmq_ports_vpn)
   type                     = "ingress"
@@ -514,5 +321,119 @@ resource "aws_security_group_rule" "rabbitmq_bastion" {
   to_port                  = var.rabbitmq_ports_vpn[count.index]
   protocol                 = "tcp"
   source_security_group_id = module.bastion.sg_id
-  security_group_id        = module
+  security_group_id        = module.rabbitmq.sg_id
+}
+
+# Payment Service Access to RabbitMQ
+resource "aws_security_group_rule" "rabbitmq_payment" {
+  type                     = "ingress"
+  from_port                = 5672
+  to_port                  = 5672
+  protocol                 = "tcp"
+  source_security_group_id = module.payment.sg_id
+  security_group_id        = module.rabbitmq.sg_id
+}
+
+# 10. Security Group Rules - Application Services Access to Backend ALB
+
+# User Service Access from Backend ALB
+resource "aws_security_group_rule" "user_backend_alb" {
+  type                     = "ingress"
+  from_port                = 8080
+  to_port                  = 8080
+  protocol                 = "tcp"
+  source_security_group_id = module.backend_alb.sg_id
+  security_group_id        = module.user.sg_id
+}
+
+# Cart Service Access from Backend ALB
+resource "aws_security_group_rule" "cart_backend_alb" {
+  type                     = "ingress"
+  from_port                = 8080
+  to_port                  = 8080
+  protocol                 = "tcp"
+  source_security_group_id = module.backend_alb.sg_id
+  security_group_id        = module.cart.sg_id
+}
+
+# Shipping Service Access from Backend ALB
+resource "aws_security_group_rule" "shipping_backend_alb" {
+  type                     = "ingress"
+  from_port                = 8080
+  to_port                  = 8080
+  protocol                 = "tcp"
+  source_security_group_id = module.backend_alb.sg_id
+  security_group_id        = module.shipping.sg_id
+}
+
+# Payment Service Access from Backend ALB
+resource "aws_security_group_rule" "payment_backend_alb" {
+  type                     = "ingress"
+  from_port                = 8080
+  to_port                  = 8080
+  protocol                 = "tcp"
+  source_security_group_id = module.backend_alb.sg_id
+  security_group_id        = module.payment.sg_id
+}
+
+# Catalogue Service Access from Backend ALB
+resource "aws_security_group_rule" "catalogue_backend_alb" {
+  type                     = "ingress"
+  from_port                = 8080
+  to_port                  = 8080
+  protocol                 = "tcp"
+  source_security_group_id = module.backend_alb.sg_id
+  security_group_id        = module.catalogue.sg_id
+}
+
+# 11. Security Group Rules - VPN SSH Access to Application Services
+
+# VPN SSH Access to User Service
+resource "aws_security_group_rule" "user_vpn_ssh" {
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  source_security_group_id = module.vpn.sg_id
+  security_group_id        = module.user.sg_id
+}
+
+# VPN SSH Access to Cart Service
+resource "aws_security_group_rule" "cart_vpn_ssh" {
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  source_security_group_id = module.vpn.sg_id
+  security_group_id        = module.cart.sg_id
+}
+
+# VPN SSH Access to Shipping Service
+resource "aws_security_group_rule" "shipping_vpn_ssh" {
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  source_security_group_id = module.vpn.sg_id
+  security_group_id        = module.shipping.sg_id
+}
+
+# VPN SSH Access to Payment Service
+resource "aws_security_group_rule" "payment_vpn_ssh" {
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  source_security_group_id = module.vpn.sg_id
+  security_group_id        = module.payment.sg_id
+}
+
+# VPN SSH Access to Catalogue Service
+resource "aws_security_group_rule" "catalogue_vpn_ssh" {
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  source_security_group_id = module.vpn.sg_id
+  security_group_id        = module.catalogue.sg_id
 }
