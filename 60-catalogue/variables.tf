@@ -1,5 +1,5 @@
 variable "project" {
-    default = "roboshop"
+    default = "Roboshop"
 }
 
 variable "environment" {
@@ -11,5 +11,5 @@ variable "zone_id" {
 }
 
 variable "zone_name" {
-    default = gurulabs.xyz"
+    default = "gurulabs.xyz"
 }

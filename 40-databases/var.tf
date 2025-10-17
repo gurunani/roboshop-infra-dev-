@@ -21,3 +21,6 @@ variable "bastion_sg_name" {
 variable "bastion_sg_discription" {
   default = "created sg for bastion instance"
 }
+variable "zone_name" {
+  default = "gurulabs.xyz"
+}
