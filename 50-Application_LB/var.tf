@@ -27,3 +27,9 @@ variable "backend_alb_sg_name" {
 variable "backend_alb_sg_description" {
   default = "created sg for backend ALB instance"
 }
+variable "zone_name" {
+  default = "gurulabs.xyz"
+}
+variable "zone_id" {
+    default = "Z08007301TGLKBZ7OY820"
+}
