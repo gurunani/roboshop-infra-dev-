@@ -24,3 +24,6 @@ variable "bastion_sg_discription" {
 variable "zone_name" {
   default = "gurulabs.xyz"
 }
+variable "zone_id" {
+    default = "Z08007301TGLKBZ7OY820"
+}
