@@ -5,13 +5,13 @@ env=$2
 
 # install ansible and pip
 dnf install -y ansible python3-pip
-
-# make sure boto3 and botocore are installed for Ansible's interpreter
 pip3 install --upgrade boto3 botocore
 
-# explicitly tell Ansible to use python3
 export ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3
 
-# pull and run the playbook
+# Explicitly set MONGODB_HOST
 ansible-pull -U https://github.com/gurunani/ansible-roboshop-roles-.git \
-  -e component=$component -e env=$env main.yaml
+  -e component=$component \
+  -e env=$env \
+  -e MONGODB_HOST=mongodb-${env}.gurulabs.xyz \
+  main.yaml
