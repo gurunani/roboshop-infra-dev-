@@ -109,7 +109,7 @@ resource "terraform_data" "catalogue_delete" {
 
 # Launch Template for Auto Scaling
 resource "aws_launch_template" "catalogue" {
-  name = "${var.project}-${var.environment}-catalogue"
+  name_prefix = "${var.project}-${var.environment}-catalogue"
 
   image_id                             = aws_ami_from_instance.catalogue.id
   instance_initiated_shutdown_behavior = "terminate"
@@ -132,7 +132,7 @@ resource "aws_launch_template" "catalogue" {
 
 # Auto Scaling Group
 resource "aws_autoscaling_group" "catalogue" {
-  name                = "${var.project}-${var.environment}-catalogue"
+  name_prefix         = "${var.project}-${var.environment}-catalogue"
   vpc_zone_identifier = local.private_subnet_ids
   desired_capacity    = 2
   max_size            = 4
