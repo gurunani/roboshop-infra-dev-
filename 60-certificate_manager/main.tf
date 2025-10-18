@@ -5,7 +5,7 @@ resource "aws_acm_certificate" "gurulabs" {
   tags = merge(
     local.common_tags,
     {
-        Name = "${var.project}-${var.environment}"
+      Name = "${var.project}-${var.environment}"
     }
   )
 
@@ -34,4 +34,8 @@ resource "aws_route53_record" "gurulabs" {
 resource "aws_acm_certificate_validation" "gurulabs" {
   certificate_arn         = aws_acm_certificate.gurulabs.arn
   validation_record_fqdns = [for record in aws_route53_record.gurulabs : record.fqdn]
+
+  timeouts {
+    create = "5m"
+  }
 }
