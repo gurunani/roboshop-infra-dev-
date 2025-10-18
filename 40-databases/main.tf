@@ -1,3 +1,15 @@
+# connection {
+#   type         = "ssh"
+#   user         = "ec2-user"
+#   password     = "DevOps321"
+#   host         = aws_instance.mongodb.private_ip
+  
+#   # Add bastion configuration
+#   bastion_host     = "bastion-dev.gurulabs.xyz"  # or use the bastion public IP
+#   bastion_user     = "ec2-user"
+#   bastion_password = "DevOps321"
+# }
+
 resource "aws_instance" "mongodb" {
   ami           = local.ami_id
   instance_type = "t3.micro"

@@ -28,7 +28,7 @@ $SCRIPTS/sacli --key 'cs.prof.defaults.dns.1' --value '1.1.1.1' ConfigPut
 $SCRIPTS/sacli --key 'vpn.client.routing.reroute_gw' --value 'true' ConfigPut
 
 # 6. Block access to VPN server services from clients (your latest request)
-$SCRIPTS/sacli --key 'vpn.server.routing.gateway_access' --value 'true' ConfigPut
+$SCRIPTS/sacli --key 'vpn.server.routing.gateway_access' --value 'false' ConfigPut
 
 systemctl restart openvpnas
 
