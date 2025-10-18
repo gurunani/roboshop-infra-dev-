@@ -437,3 +437,14 @@ resource "aws_security_group_rule" "catalogue_vpn_ssh" {
   source_security_group_id = module.vpn.sg_id
   security_group_id        = module.catalogue.sg_id
 }
+
+module "frontend_alb" {
+    #source = "../../terraform-aws-securitygroup"
+    source = "git::https://github.com/daws-84s/terraform-aws-securitygroup.git?ref=main"
+    project = var.project
+    environment = var.environment
+
+    sg_name = "frontend-alb"
+    sg_description = "for frontend alb"
+    vpc_id = local.vpc_id
+}
