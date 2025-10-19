@@ -466,3 +466,22 @@ resource "aws_security_group_rule" "frontend_alb_http" {
   cidr_blocks = ["0.0.0.0/0"]
   security_group_id = module.frontend_alb.sg_id
 }
+# Frontend accepts traffic from Frontend ALB
+resource "aws_security_group_rule" "frontend_frontend_alb" {
+  type                     = "ingress"
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+  source_security_group_id = module.frontend_alb.sg_id
+  security_group_id        = module.frontend.sg_id
+}
+
+# VPN SSH Access to Frontend
+resource "aws_security_group_rule" "frontend_vpn_ssh" {
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  source_security_group_id = module.vpn.sg_id
+  security_group_id        = module.frontend.sg_id
+}
