@@ -485,3 +485,11 @@ resource "aws_security_group_rule" "frontend_vpn_ssh" {
   source_security_group_id = module.vpn.sg_id
   security_group_id        = module.frontend.sg_id
 }
+resource "aws_security_group_rule" "allow_ssh_from_vpn" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = ["10.0.0.0/16"] # 👈 replace with your actual VPN CIDR
+  security_group_id = aws_security_group.roboshop.id
+}
