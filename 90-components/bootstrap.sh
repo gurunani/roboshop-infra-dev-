@@ -20,5 +20,5 @@ export ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3
 ansible-pull -U https://github.com/gurunani/ansible-roboshop-roles-tf.git \
   -e component=$component \
   -e env=$env \
-  -e MONGODB_HOST: mongodb-{{ env }}.gurulabs.xyz
+  -e MONGODB_HOST=mongodb-${env}.gurulabs.xyz \
   main.yaml
