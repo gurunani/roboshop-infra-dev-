@@ -134,6 +134,16 @@ module "catalogue" {
   vpc_id         = local.vpc_id
 }
 
+# Frontend ALB Security Group
+module "frontend_alb" {
+  source         = "git::https://github.com/gurunani/terraform-aws-securitygroup.git?ref=main"
+  project        = var.project
+  environment    = var.environment
+  sg_name        = "frontend-alb"
+  sg_description = "for frontend alb"
+  vpc_id         = local.vpc_id
+}
+
 # 4. Security Group Rules - VPN Access
 
 # VPN Ingress Rules (Allow multiple ports: 22, 443, 1194, 943)
@@ -192,16 +202,6 @@ resource "aws_security_group_rule" "mongodb_user" {
 
 # 6. Security Group Rules - Backend ALB Access
 
-# Bastion SSH Access to Backend ALB
-resource "aws_security_group_rule" "backend_alb_bastion" {
-  type                     = "ingress"
-  from_port                = 22
-  to_port                  = 22
-  protocol                 = "tcp"
-  source_security_group_id = module.bastion.sg_id
-  security_group_id        = module.backend_alb.sg_id
-}
-
 # VPN HTTP Access to Backend ALB
 resource "aws_security_group_rule" "backend_alb_vpn" {
   type                     = "ingress"
@@ -232,17 +232,6 @@ resource "aws_security_group_rule" "redis_vpn" {
   to_port                  = var.redis_ports_vpn[count.index]
   protocol                 = "tcp"
   source_security_group_id = module.vpn.sg_id
-  security_group_id        = module.redis.sg_id
-}
-
-# Bastion Access to Redis
-resource "aws_security_group_rule" "redis_bastion" {
-  count                    = length(var.redis_ports_vpn)
-  type                     = "ingress"
-  from_port                = var.redis_ports_vpn[count.index]
-  to_port                  = var.redis_ports_vpn[count.index]
-  protocol                 = "tcp"
-  source_security_group_id = module.bastion.sg_id
   security_group_id        = module.redis.sg_id
 }
 
@@ -279,17 +268,6 @@ resource "aws_security_group_rule" "mysql_vpn" {
   security_group_id        = module.mysql.sg_id
 }
 
-# Bastion Access to MySQL
-resource "aws_security_group_rule" "mysql_bastion" {
-  count                    = length(var.mysql_ports_vpn)
-  type                     = "ingress"
-  from_port                = var.mysql_ports_vpn[count.index]
-  to_port                  = var.mysql_ports_vpn[count.index]
-  protocol                 = "tcp"
-  source_security_group_id = module.bastion.sg_id
-  security_group_id        = module.mysql.sg_id
-}
-
 # Shipping Service Access to MySQL
 resource "aws_security_group_rule" "mysql_shipping" {
   type                     = "ingress"
@@ -310,17 +288,6 @@ resource "aws_security_group_rule" "rabbitmq_vpn" {
   to_port                  = var.rabbitmq_ports_vpn[count.index]
   protocol                 = "tcp"
   source_security_group_id = module.vpn.sg_id
-  security_group_id        = module.rabbitmq.sg_id
-}
-
-# Bastion Access to RabbitMQ
-resource "aws_security_group_rule" "rabbitmq_bastion" {
-  count                    = length(var.rabbitmq_ports_vpn)
-  type                     = "ingress"
-  from_port                = var.rabbitmq_ports_vpn[count.index]
-  to_port                  = var.rabbitmq_ports_vpn[count.index]
-  protocol                 = "tcp"
-  source_security_group_id = module.bastion.sg_id
   security_group_id        = module.rabbitmq.sg_id
 }
 
@@ -438,34 +405,28 @@ resource "aws_security_group_rule" "catalogue_vpn_ssh" {
   security_group_id        = module.catalogue.sg_id
 }
 
-module "frontend_alb" {
-    #source = "../../terraform-aws-securitygroup"
-    source = "git::https://github.com/daws-84s/terraform-aws-securitygroup.git?ref=main"  #notgurunani git
-    project = var.project
-    environment = var.environment
+# 12. Frontend ALB Security Group Rules
 
-    sg_name = "frontend-alb"
-    sg_description = "for frontend alb"
-    vpc_id = local.vpc_id
-}
-
+# Frontend ALB HTTPS Access from Internet
 resource "aws_security_group_rule" "frontend_alb_https" {
   type              = "ingress"
   from_port         = 443
   to_port           = 443
   protocol          = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = module.frontend_alb.sg_id
 }
 
+# Frontend ALB HTTP Access from Internet
 resource "aws_security_group_rule" "frontend_alb_http" {
   type              = "ingress"
   from_port         = 80
   to_port           = 80
   protocol          = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = module.frontend_alb.sg_id
 }
+
 # Frontend accepts traffic from Frontend ALB
 resource "aws_security_group_rule" "frontend_frontend_alb" {
   type                     = "ingress"
@@ -484,12 +445,4 @@ resource "aws_security_group_rule" "frontend_vpn_ssh" {
   protocol                 = "tcp"
   source_security_group_id = module.vpn.sg_id
   security_group_id        = module.frontend.sg_id
-}
-resource "aws_security_group_rule" "allow_ssh_from_vpn" {
-  type              = "ingress"
-  from_port         = 22
-  to_port           = 22
-  protocol          = "tcp"
-  cidr_blocks       = ["10.0.0.0/16"] # 👈 replace with your actual VPN CIDR
-  security_group_id = aws_security_group.roboshop.id
 }
