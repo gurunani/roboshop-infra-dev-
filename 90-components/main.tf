@@ -1,6 +1,6 @@
 module "component" {
     for_each = var.components
-    source = "git::https://github.com/daws-84s/terraform-aws-roboshop.git?ref=main"
+    source = "git::https://github.com/gurunani/terraform-aws-roboshop.git?ref=main"
     
     project       = var.project
     environment   = var.environment
