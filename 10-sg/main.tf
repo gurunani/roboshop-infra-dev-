@@ -161,24 +161,18 @@ resource "aws_security_group_rule" "vpn_ingress" {
 # 5. Security Group Rules - MongoDB Access
 
 # VPN SSH Access to MongoDB
-resource "aws_security_group_rule" "mongodb_vpn_ssh" {
-  type                     = "ingress"
-  from_port                = 22
-  to_port                  = 22
-  protocol                 = "tcp"
-  source_security_group_id = module.vpn.sg_id
-  security_group_id        = module.mongodb.sg_id
-}
 
 # VPN MongoDB Port Access
-resource "aws_security_group_rule" "mongodb_vpn_27017" {
-  type                     = "ingress"
-  from_port                = 27017
-  to_port                  = 27017
-  protocol                 = "tcp"
+resource "aws_security_group_rule" "mongodb_vpn" {
+  count = length(var.mongodb_ports_vpn)
+  type              = "ingress"
+  from_port         = var.mongodb_ports_vpn[count.index]
+  to_port           = var.mongodb_ports_vpn[count.index]
+  protocol          = "tcp"
   source_security_group_id = module.vpn.sg_id
-  security_group_id        = module.mongodb.sg_id
+  security_group_id = module.mongodb.sg_id
 }
+
 
 # Catalogue Service Access to MongoDB
 resource "aws_security_group_rule" "mongodb_catalogue" {
@@ -403,6 +397,51 @@ resource "aws_security_group_rule" "catalogue_vpn_ssh" {
   protocol                 = "tcp"
   source_security_group_id = module.vpn.sg_id
   security_group_id        = module.catalogue.sg_id
+}
+# VPN HTTP Access to Application Services
+resource "aws_security_group_rule" "catalogue_vpn_http" {
+  type                     = "ingress"
+  from_port                = 8080
+  to_port                  = 8080
+  protocol                 = "tcp"
+  source_security_group_id = module.vpn.sg_id
+  security_group_id        = module.catalogue.sg_id
+}
+
+resource "aws_security_group_rule" "user_vpn_http" {
+  type                     = "ingress"
+  from_port                = 8080
+  to_port                  = 8080
+  protocol                 = "tcp"
+  source_security_group_id = module.vpn.sg_id
+  security_group_id        = module.user.sg_id
+}
+
+resource "aws_security_group_rule" "cart_vpn_http" {
+  type                     = "ingress"
+  from_port                = 8080
+  to_port                  = 8080
+  protocol                 = "tcp"
+  source_security_group_id = module.vpn.sg_id
+  security_group_id        = module.cart.sg_id
+}
+
+resource "aws_security_group_rule" "shipping_vpn_http" {
+  type                     = "ingress"
+  from_port                = 8080
+  to_port                  = 8080
+  protocol                 = "tcp"
+  source_security_group_id = module.vpn.sg_id
+  security_group_id        = module.shipping.sg_id
+}
+
+resource "aws_security_group_rule" "payment_vpn_http" {
+  type                     = "ingress"
+  from_port                = 8080
+  to_port                  = 8080
+  protocol                 = "tcp"
+  source_security_group_id = module.vpn.sg_id
+  security_group_id        = module.payment.sg_id
 }
 
 # 12. Frontend ALB Security Group Rules

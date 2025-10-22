@@ -39,7 +39,7 @@ variable "mongodb_name" {
 variable "mongodb_description" {
   default = "created sg for mongodb instance"
 }
-variable "mongodb_port_vpn" {
+variable "mongodb_ports_vpn" {
   default = [22, 27017]
 }
 
