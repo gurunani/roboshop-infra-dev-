@@ -1,5 +1,5 @@
 variable "project" {
-  default = "Roboshop"
+  default = "roboshop"
   type    = string
 }
 

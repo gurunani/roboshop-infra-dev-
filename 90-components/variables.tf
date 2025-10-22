@@ -1,5 +1,5 @@
 variable "project" {
-    default = "Roboshop"  # Capital R - matches your SSM parameters
+    default = "roboshop"  # Capital R - matches your SSM parameters
 }
 
 variable "environment" {

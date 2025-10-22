@@ -2,7 +2,7 @@
 #   default = "../terraform-aws-vpc"
 # }
 variable "project" {
-  default = "Roboshop"
+  default = "roboshop"
 }
 variable "environment" {
   default = "dev"
